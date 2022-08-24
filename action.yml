@@ -1,0 +1,42 @@
+name: 'Splitfiles'
+description: 'Drop-in replacement for splitfiles'
+inputs:
+  glob:
+    description: 'The pattern of filenames to match. i.e. tests/**/test_*.py. Passed verbatim to minimatch. Separate by space'
+    required: true
+  partition_index:
+    description: 'Which partition [0, total_partitions)'
+    required: true
+  total_partitions:
+    description: 'The number of partitions'
+    required: true
+  sort:
+    description: 'Whether or how to sort -- random, lexicographical -- default lexicographical'
+    required: false
+  output_delimiter:
+    description: 'Delimiter to separate files, defaults to space'
+    required: false
+outputs:
+  files:
+    description: "The set of files in this partition"
+    value: ""
+  count:
+    description: "How many files in this partition"
+    value: "0"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v3
+    - name: 'Get Parition Files'
+      run: 'node $GITHUB_ACTION_PATH/dist/main.js'
+      shell: 'bash'
+      env:
+        glob: ${{ inputs.glob }}
+        partition_index: ${{ inputs.partition_index }}
+        total_partitions: ${{ inputs.total_partitions }}
+        sort: ${{ inputs.sort }}
+        output_delimiter: ${{ inputs.output_delimiter }}
+
+branding:
+  icon: 'target'
+  color: 'gray-dark'
